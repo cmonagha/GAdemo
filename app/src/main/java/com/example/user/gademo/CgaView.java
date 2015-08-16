@@ -4,6 +4,7 @@ package com.example.user.gademo;
  * Created by user on 8/16/15.
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -32,6 +33,8 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
     private Paint backgroundPaint;
     private Paint blockPaint;
     private Paint linePaint;
+    private boolean dialogIsDisplayed = false;
+    private Activity activity;
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -70,6 +73,7 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
     {
         super(context, attrs);
         getHolder().addCallback(this);
+        activity = (Activity) context;
 
         textPaint = new Paint(); // Paint for drawing text
         cannonPaint = new Paint(); // Paint for drawing the cannon
@@ -93,21 +97,24 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
 
         Point currentPoint = new Point(); // start of current target section
 
-        final int BlockSizeY = canvas.getWidth()/MAP_WIDTH;
-        final int BlockSizeX = canvas.getHeight()/MAP_HEIGHT;
+        final int BlockSizeY = canvas.getHeight()/MAP_HEIGHT;
+        final int BlockSizeX = canvas.getWidth()/MAP_WIDTH;
 
         int x = 0;
         int y = 0;
 
-        for (y = 0;y<canvas.getWidth(); y += BlockSizeY)
+        // draw verticles.  (0,y+blocky,canvaswidth,y+blocky)
+        for (y = 0;y<canvas.getHeight(); y += BlockSizeY)
         {
-            canvas.drawLine(x, y, canvas.getHeight(), y, linePaint);
+            canvas.drawLine(x, y, canvas.getWidth(), y, linePaint);
         }
         y=0;
-        for(x = 0;x< canvas.getHeight(); x += BlockSizeX)
+        //draw the horizontals (
+        for(x = 0;x< canvas.getWidth(); x += BlockSizeX)
         {
-            canvas.drawLine(x, y, x, canvas.getWidth(), linePaint);
+            canvas.drawLine(x, y, x, canvas.getHeight(), linePaint);
         }
+
         int left, top;
         for (int i = 0; i< MAP_WIDTH; i++){
             for(int j = 0; j<MAP_HEIGHT; j++){
@@ -116,15 +123,27 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
 
                     left = i*BlockSizeX;
                     top = j*BlockSizeY;
-                    canvas.drawRect(left, top, BlockSizeX, BlockSizeY, blockPaint);
+                    canvas.drawRect(left, top, left + BlockSizeX, top + BlockSizeY, blockPaint);
                 }
                 if((map[j][i] == 5) || (map[j][i] == 8)) {
                     left = i * BlockSizeX;
                     top = j * BlockSizeY;
-                    canvas.drawRect(left, top, BlockSizeX, BlockSizeY, endPaint);
+                    canvas.drawRect(left, top, left+ BlockSizeX, top + BlockSizeY, endPaint);
                 }
             }
         }
+    }
+
+    // stops the game
+    public void stopGame()
+    {
+        if (cgaThread != null)
+            cgaThread.setRunning(false);
+    }
+
+    public void releaseResources()
+    {
+
     }
 
     // Thread subclass to control the game loop

@@ -13,9 +13,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         cgaView = (CgaView) findViewById(R.id.cgaView);
-
-
     }
 
+    @Override
+    public void onPause()
+    {
+        super.onPause(); // call the super method
+        cgaView.stopGame(); // terminates the game
+    }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        cgaView.releaseResources();
+    }
 }
