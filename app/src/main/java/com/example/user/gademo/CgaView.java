@@ -3,27 +3,43 @@ package com.example.user.gademo;
 /**
  * Created by user on 8/16/15.
  */
+
+import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.jar.Attributes;
-import android.content.Context;
-import android.util.AttributeSet;
+import static com.example.user.gademo.CBobsMap.map;
+import static com.example.user.gademo.defines.MAP_HEIGHT;
+import static com.example.user.gademo.defines.MAP_WIDTH;
 
 /**
  * Created by user on 8/15/15.
  */
 public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
 
+    private CgaThread cgaThread;
+
+    private Paint textPaint; // Paint used to draw text
+    private Paint cannonballPaint; // Paint used to draw the cannonball
+    private Paint cannonPaint; // Paint used to draw the cannon
+    private Paint blockerPaint; // Paint used to draw the blocker
+    private Paint endPaint; // Paint used to draw the target
+    private Paint backgroundPaint;
+    private Paint blockPaint;
+    private Paint linePaint;
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if (!dialogIsDisplayed)
-        {
-            cannonThread = new CannonThread(holder);
-            cannonThread.setRunning(true);
-            cannonThread.start(); // start the game loop thread
-        }
+
+        cgaThread = new CgaThread(holder);
+        cgaThread.setRunning(true);
+        cgaThread.start(); // start the game loop thread
+
     }
 
     @Override
@@ -35,13 +51,13 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceDestroyed(SurfaceHolder holder) {
         // ensure that thread terminates properly
         boolean retry = true;
-        cannonThread.setRunning(false);
+        cgaThread.setRunning(false);
 
         while (retry)
         {
             try
             {
-                cannonThread.join();
+                cgaThread.join();
                 retry = false;
             } // end try
             catch (InterruptedException e)
@@ -53,16 +69,72 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
     public CgaView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
+        getHolder().addCallback(this);
+
+        textPaint = new Paint(); // Paint for drawing text
+        cannonPaint = new Paint(); // Paint for drawing the cannon
+        cannonballPaint = new Paint(); // Paint for drawing a cannonball
+        blockerPaint = new Paint(); // Paint for drawing the blocker
+        endPaint = new Paint(); // Paint for drawing the target
+        backgroundPaint = new Paint();
+        blockPaint = new Paint();
+        linePaint = new Paint();
+    }
+
+    public void drawGameElements(Canvas canvas) {
+        backgroundPaint.setColor(Color.GRAY);
+        blockPaint.setColor(Color.BLUE);
+        linePaint.setColor(Color.BLACK);
+        endPaint.setColor(Color.RED);
+
+        // clear the background
+        canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(),
+                backgroundPaint);
+
+        Point currentPoint = new Point(); // start of current target section
+
+        final int BlockSizeY = canvas.getWidth()/MAP_WIDTH;
+        final int BlockSizeX = canvas.getHeight()/MAP_HEIGHT;
+
+        int x = 0;
+        int y = 0;
+
+        for (y = 0;y<canvas.getWidth(); y += BlockSizeY)
+        {
+            canvas.drawLine(x, y, canvas.getHeight(), y, linePaint);
+        }
+        y=0;
+        for(x = 0;x< canvas.getHeight(); x += BlockSizeX)
+        {
+            canvas.drawLine(x, y, x, canvas.getWidth(), linePaint);
+        }
+        int left, top;
+        for (int i = 0; i< MAP_WIDTH; i++){
+            for(int j = 0; j<MAP_HEIGHT; j++){
+
+                if (map[j][i] == 1){
+
+                    left = i*BlockSizeX;
+                    top = j*BlockSizeY;
+                    canvas.drawRect(left, top, BlockSizeX, BlockSizeY, blockPaint);
+                }
+                if((map[j][i] == 5) || (map[j][i] == 8)) {
+                    left = i * BlockSizeX;
+                    top = j * BlockSizeY;
+                    canvas.drawRect(left, top, BlockSizeX, BlockSizeY, endPaint);
+                }
+            }
+        }
     }
 
     // Thread subclass to control the game loop
-    private class CannonThread extends Thread
+    private class CgaThread extends Thread
     {
         private SurfaceHolder surfaceHolder; // for manipulating canvas
         private boolean threadIsRunning = true; // running by default
 
         // initializes the surface holder
-        public CannonThread(SurfaceHolder holder)
+        public CgaThread(SurfaceHolder holder)
         {
             surfaceHolder = holder;
             setName("CannonThread");
@@ -92,8 +164,7 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
                     {
                         long currentTime = System.currentTimeMillis();
                         double elapsedTimeMS = currentTime - previousFrameTime;
-                        totalElapsedTime += elapsedTimeMS / 1000.00;
-                        updatePositions(elapsedTimeMS); // update game state
+
                         drawGameElements(canvas); // draw
                         previousFrameTime = currentTime; // update previous time
                     } // end synchronized block
