@@ -3,32 +3,35 @@ package com.example.user.gademo;
 /**
  * Created by user on 8/16/15.
  */
+import android.view.GestureDetector;
+
 import java.util.Vector;
 import java.util.Random;
+import android.util.Log;
 
 /**
  * Created by user on 8/15/15.
  */
 public class CgaBob {
     public class SGenome{
-        public Vector<Integer> vecBits;
+        public Vector<Integer> vecBits = new Vector<>();
         double dFitness;
         Random rand = new Random();
 
         SGenome(){
-            dFitness = 0;
+            dFitness = 0.0;
         }
 
-        SGenome(final int num_bits)
+        SGenome(int num_bits)
         {
-            dFitness = 0;
+            dFitness = 0.0;
             for (int i=0; i < num_bits; i++){
                 vecBits.add(rand.nextInt(2));
             }
         }
     };
 
-    private Vector<SGenome> m_vecGenome;
+    private Vector<SGenome> m_vecGenome = new Vector<>();
     private int m_iPopSize;
     private double m_dCrossoverRate;
     private double m_dMutationRate;
@@ -42,12 +45,13 @@ public class CgaBob {
     private int m_iGeneration;
 
     private CBobsMap m_BobsMap;
-    private CBobsMap m_BobsBrain;
+    public CBobsMap m_BobsBrain;
 
     private boolean m_bBusy;
 
     private void Mutate(Vector<Integer> vecBits)
     {
+        Log.i("CgaBob", "Mutate RAN");
         Random rand = new Random();
         for(int curBit = 0; curBit<vecBits.size(); curBit++)
         {
@@ -65,6 +69,7 @@ public class CgaBob {
 
     private void Crossover(final Vector<Integer> mum, final Vector<Integer> dad, Vector<Integer> baby1, Vector<Integer> baby2)
     {
+        Log.i("CgaBob", "Crossover RAN");
         Random rand = new Random();
         if ((rand.nextFloat() > m_dCrossoverRate) || (mum == dad))
         {
@@ -91,6 +96,7 @@ public class CgaBob {
 
     private SGenome RouletteWheelSelection()
     {
+        Log.i("CgaBob", "RouletteWheelSelection RAN");
         Random rand = new Random();
         double fSlice = rand.nextFloat() * m_dTotalFitnessScore;
         double cfTotal = 0.0;
@@ -110,11 +116,48 @@ public class CgaBob {
 
     private void UpdateFitnessScore()
     {
+        Log.i("CgaBob", "UpdateFitnessScore RAN");
+        m_iFittestGenome = 0;
+        m_dBestFitnessScore = 0;
+        m_dTotalFitnessScore = 0;
 
+        CBobsMap TempMemory = new CBobsMap();
+
+        // update the fitness scores and keep a check on fittest so far
+        for (int i = 0; i<m_iPopSize; i++){
+            // decode each genomes chromosomes into a vector of directions
+            Vector<Integer> vecDirections = Decode(m_vecGenome.get(i).vecBits);
+
+            // get it's fitness score
+            m_vecGenome.get(i).dFitness = m_BobsMap.TestRoute(vecDirections, TempMemory);
+
+            //update total
+            m_dTotalFitnessScore += m_vecGenome.get(i).dFitness;
+
+            // if this is the fittest genome found so far, store results
+            if(m_vecGenome.get(i).dFitness > m_dBestFitnessScore)
+            {
+                m_dBestFitnessScore = m_vecGenome.get(i).dFitness;
+
+                m_iFittestGenome = i;
+
+                m_BobsBrain = TempMemory;
+
+                // Has Bob found the exit?
+                if(m_vecGenome.get(i).dFitness == 1)
+                {
+                    //if so, stom the run
+                    m_bBusy = false;
+                }
+            }
+
+            TempMemory.ResetMemory();
+        }
     }
 
     private Vector<Integer> Decode (final Vector<Integer> bits)
     {
+        Log.i("CgaBob", "Decode RAN");
         Vector<Integer> directions = new Vector<Integer>();
 
         //step through the choromosome a gene at a time
@@ -137,6 +180,7 @@ public class CgaBob {
 
     private int BinToInt (final Vector<Integer> v)
     {
+        Log.i("CgaBob", "BinToInt RAN");
         int val = 0;
         int multiplier = 1;
 
@@ -150,9 +194,10 @@ public class CgaBob {
 
     private void CreateStartPopulation()
     {
+        Log.i("CgaBob", "CreateStartPopulation RAN");
         for (int i = 0; i<m_iPopSize; i++)
         {
-            m_vecGenome.add(new SGenome(m_iChromoLength));
+           m_vecGenome.add(new SGenome(m_iChromoLength));
         }
         m_iGeneration = 0;
         m_iFittestGenome = 0;
@@ -175,8 +220,10 @@ public class CgaBob {
     }
 
     public void Run(){
+        Log.i("CgaBob", "Run RAN");
         CreateStartPopulation();
         m_bBusy = true;
+       Epoch();
     }
     public void Render()
     {
@@ -185,6 +232,7 @@ public class CgaBob {
 
     public void Epoch()
     {
+        Log.i("CgaBob", "Epoch RAN");
         UpdateFitnessScore();
 
         // Now Create a new population

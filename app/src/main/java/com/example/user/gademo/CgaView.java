@@ -13,10 +13,16 @@ import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.util.Log;
 
 import static com.example.user.gademo.CBobsMap.map;
+import static com.example.user.gademo.defines.CHROMO_LENGTH;
+import static com.example.user.gademo.defines.CROSSOVER_RATE;
+import static com.example.user.gademo.defines.GENE_LENGTH;
 import static com.example.user.gademo.defines.MAP_HEIGHT;
 import static com.example.user.gademo.defines.MAP_WIDTH;
+import static com.example.user.gademo.defines.MUTATION_RATE;
+import static com.example.user.gademo.defines.POP_SIZE;
 
 /**
  * Created by user on 8/15/15.
@@ -24,11 +30,13 @@ import static com.example.user.gademo.defines.MAP_WIDTH;
 public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
 
     private CgaThread cgaThread;
+    CgaBob g_pGABob;
+
 
     private Paint textPaint; // Paint used to draw text
     private Paint cannonballPaint; // Paint used to draw the cannonball
     private Paint cannonPaint; // Paint used to draw the cannon
-    private Paint blockerPaint; // Paint used to draw the blocker
+    private Paint memPaint; // Paint used to draw the blocker
     private Paint endPaint; // Paint used to draw the target
     private Paint backgroundPaint;
     private Paint blockPaint;
@@ -75,14 +83,21 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
         activity = (Activity) context;
 
+
+        g_pGABob = new CgaBob(CROSSOVER_RATE, MUTATION_RATE, POP_SIZE, CHROMO_LENGTH, GENE_LENGTH);
         textPaint = new Paint(); // Paint for drawing text
         cannonPaint = new Paint(); // Paint for drawing the cannon
         cannonballPaint = new Paint(); // Paint for drawing a cannonball
-        blockerPaint = new Paint(); // Paint for drawing the blocker
+        memPaint = new Paint(); // Paint for drawing the blocker
         endPaint = new Paint(); // Paint for drawing the target
         backgroundPaint = new Paint();
         blockPaint = new Paint();
         linePaint = new Paint();
+    }
+
+    public void start()
+    {
+        g_pGABob.Run();
     }
 
     public void drawGameElements(Canvas canvas) {
@@ -90,6 +105,7 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
         blockPaint.setColor(Color.BLUE);
         linePaint.setColor(Color.BLACK);
         endPaint.setColor(Color.RED);
+        memPaint.setColor(Color.GREEN);
 
         // clear the background
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(),
@@ -131,6 +147,23 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
                     canvas.drawRect(left, top, left+ BlockSizeX, top + BlockSizeY, endPaint);
                 }
             }
+        }
+
+        if (g_pGABob.Started())
+        {
+            for(int k = 0; k < MAP_HEIGHT; k++)
+            {
+                for(int l = 0; l< MAP_WIDTH; l++)
+                {
+                    if(g_pGABob.m_BobsBrain.memory[k][l] == 1)
+                    {
+                        left = k*BlockSizeX;
+                        top = l*BlockSizeY;
+                        canvas.drawRect(left, top, left + BlockSizeX, top + BlockSizeY, memPaint);
+                    }
+                }
+            }
+
         }
     }
 

@@ -5,10 +5,12 @@ package com.example.user.gademo;
  */
 
 import java.util.Vector;
+import android.util.Log;
 
 import static com.example.user.gademo.defines.MAP_HEIGHT;
 import static com.example.user.gademo.defines.MAP_WIDTH;
 import static java.lang.Math.abs;
+
 
 
 // this is some txt
@@ -49,6 +51,7 @@ public class CBobsMap {
 
     public double TestRoute(final Vector<Integer> vecPath, CBobsMap Bobs)
     {
+        Log.i("CBobsMap", "TestRoute RAN");
         int posX = m_iStartX;
         int posY = m_iStartY;
 
