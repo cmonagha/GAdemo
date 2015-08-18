@@ -44,6 +44,7 @@ public class CBobsMap {
 
     CBobsMap()
     {
+        Log.i("CBobsMap", "Constructor RAN");
         ResetMemory();
     }
 
@@ -134,6 +135,7 @@ public class CBobsMap {
 
     public void ResetMemory()
     {
+        Log.i("CBobsMap", "Reset Memory RAN");
         for(int y=0; y<m_iMapHeight; ++y)
         {
             for(int x = 0; x<m_iMapWidth; x++)

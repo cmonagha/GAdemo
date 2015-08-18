@@ -3,12 +3,13 @@ package com.example.user.gademo;
 /**
  * Created by user on 8/16/15.
  */
-import android.view.GestureDetector;
 
 import java.util.Vector;
 import java.util.Random;
 import android.util.Log;
 
+import static com.example.user.gademo.defines.MAP_WIDTH;
+import static com.example.user.gademo.defines.MAP_HEIGHT;
 /**
  * Created by user on 8/15/15.
  */
@@ -44,8 +45,8 @@ public class CgaBob {
     private double m_dTotalFitnessScore;
     private int m_iGeneration;
 
-    private CBobsMap m_BobsMap;
-    public CBobsMap m_BobsBrain;
+    private CBobsMap m_BobsMap = new CBobsMap();
+    public CBobsMap m_BobsBrain = new CBobsMap();
 
     private boolean m_bBusy;
 
@@ -126,7 +127,8 @@ public class CgaBob {
         // update the fitness scores and keep a check on fittest so far
         for (int i = 0; i<m_iPopSize; i++){
             // decode each genomes chromosomes into a vector of directions
-            Vector<Integer> vecDirections = Decode(m_vecGenome.get(i).vecBits);
+            Vector<Integer> vecDirections = new Vector<>();
+            vecDirections = Decode(m_vecGenome.get(i).vecBits);
 
             // get it's fitness score
             m_vecGenome.get(i).dFitness = m_BobsMap.TestRoute(vecDirections, TempMemory);
@@ -141,13 +143,18 @@ public class CgaBob {
 
                 m_iFittestGenome = i;
 
-                m_BobsBrain = TempMemory;
+                for (int j = 0; j < MAP_HEIGHT; j++){
+                    for(int k = 0; k < MAP_WIDTH; k++){
+                        m_BobsBrain.memory[j][k] = TempMemory.memory[j][k];
+                    }
+                }
 
                 // Has Bob found the exit?
                 if(m_vecGenome.get(i).dFitness == 1)
                 {
                     //if so, stom the run
                     m_bBusy = false;
+                    Log.i("CgaBob", "Found the exit");
                 }
             }
 
@@ -180,7 +187,7 @@ public class CgaBob {
 
     private int BinToInt (final Vector<Integer> v)
     {
-        Log.i("CgaBob", "BinToInt RAN");
+        //Log.i("CgaBob", "BinToInt RAN");
         int val = 0;
         int multiplier = 1;
 
