@@ -4,12 +4,13 @@ package com.example.user.gademo;
  * Created by user on 8/16/15.
  */
 
-import java.util.Vector;
-import java.util.Random;
 import android.util.Log;
 
-import static com.example.user.gademo.defines.MAP_WIDTH;
+import java.util.Random;
+import java.util.Vector;
+
 import static com.example.user.gademo.defines.MAP_HEIGHT;
+import static com.example.user.gademo.defines.MAP_WIDTH;
 /**
  * Created by user on 8/15/15.
  */
@@ -127,8 +128,7 @@ public class CgaBob {
         // update the fitness scores and keep a check on fittest so far
         for (int i = 0; i<m_iPopSize; i++){
             // decode each genomes chromosomes into a vector of directions
-            Vector<Integer> vecDirections = new Vector<>();
-            vecDirections = Decode(m_vecGenome.get(i).vecBits);
+            Vector<Integer> vecDirections = Decode(m_vecGenome.get(i).vecBits);
 
             // get it's fitness score
             m_vecGenome.get(i).dFitness = m_BobsMap.TestRoute(vecDirections, TempMemory);
@@ -210,6 +210,7 @@ public class CgaBob {
         m_iFittestGenome = 0;
         m_dBestFitnessScore = 0;
         m_dTotalFitnessScore = 0;
+        m_BobsBrain.ResetMemory();
     }
 
     public CgaBob(double cross_rat, double mut_rat, int pop_size, int num_bits, int gene_len)

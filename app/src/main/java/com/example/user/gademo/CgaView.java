@@ -13,7 +13,6 @@ import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.util.Log;
 
 import static com.example.user.gademo.CBobsMap.map;
 import static com.example.user.gademo.defines.CHROMO_LENGTH;
@@ -149,21 +148,20 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
-        if (g_pGABob.Started())
+        if (g_pGABob.Started()) {
+            g_pGABob.Epoch();
+        }
+        for(int k = 0; k < MAP_WIDTH; k++)
         {
-            for(int k = 0; k < MAP_HEIGHT; k++)
+            for(int l = 0; l< MAP_HEIGHT; l++)
             {
-                for(int l = 0; l< MAP_WIDTH; l++)
+                if(g_pGABob.m_BobsBrain.memory[l][k] == 1)
                 {
-                    if(g_pGABob.m_BobsBrain.memory[k][l] == 1)
-                    {
-                        left = k*BlockSizeX;
-                        top = l*BlockSizeY;
+                        left = k *BlockSizeX;
+                        top = l *BlockSizeY;
                         canvas.drawRect(left, top, left + BlockSizeX, top + BlockSizeY, memPaint);
-                    }
                 }
             }
-
         }
     }
 
