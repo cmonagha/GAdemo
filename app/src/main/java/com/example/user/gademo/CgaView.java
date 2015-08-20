@@ -31,7 +31,6 @@ public class CgaView extends SurfaceView implements SurfaceHolder.Callback {
     private CgaThread cgaThread;
     CgaBob g_pGABob;
 
-
     private Paint textPaint; // Paint used to draw text
     private Paint cannonballPaint; // Paint used to draw the cannonball
     private Paint cannonPaint; // Paint used to draw the cannon
