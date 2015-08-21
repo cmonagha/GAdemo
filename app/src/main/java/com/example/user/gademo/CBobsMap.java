@@ -130,7 +130,7 @@ public class CBobsMap {
 
     public void MemoryRender(final int xClient, final int yClient)
     {
-
+        // this is a change
     }
 
     public void ResetMemory()
