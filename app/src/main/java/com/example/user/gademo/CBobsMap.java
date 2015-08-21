@@ -46,7 +46,7 @@ public class CBobsMap {
     {
         Log.i("CBobsMap", "Constructor RAN");
         ResetMemory();
-    }
+    } // this is a addition
 
 
 
