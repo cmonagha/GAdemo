@@ -1,14 +1,19 @@
-package com.example.user.gademo;
+package com.example.user.gademo.CBob;
 
 /**
  * Created by user on 8/16/15.
  */
 
-import java.util.Vector;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.util.Log;
 
-import static com.example.user.gademo.defines.MAP_HEIGHT;
-import static com.example.user.gademo.defines.MAP_WIDTH;
+import java.util.Vector;
+
+import static com.example.user.gademo.CBob.defines.MAP_HEIGHT;
+import static com.example.user.gademo.CBob.defines.MAP_WIDTH;
 import static java.lang.Math.abs;
 
 
@@ -40,12 +45,24 @@ public class CBobsMap {
     private static final int m_iEndX=0;
     private static final int m_iEndY=2;
 
+    private Paint memPaint; // Paint used to draw the blocker
+    private Paint endPaint; // Paint used to draw the target
+    private Paint backgroundPaint;
+    private Paint blockPaint;
+    private Paint linePaint;
+
     public int[][] memory = new int[MAP_HEIGHT][MAP_WIDTH];
 
     CBobsMap()
     {
         Log.i("CBobsMap", "Constructor RAN");
         ResetMemory();
+
+        memPaint = new Paint(); // Paint for drawing the blocker
+        endPaint = new Paint(); // Paint for drawing the target
+        backgroundPaint = new Paint();
+        blockPaint = new Paint();
+        linePaint = new Paint();
     }
 
 
@@ -123,14 +140,75 @@ public class CBobsMap {
         return 1/(double)(DiffX+DiffY+1);
     }
 
-    public void Render(final int xClient, final int yClient)
+    public void Render(Canvas canvas)
     {
+        backgroundPaint.setColor(Color.GRAY);
+        blockPaint.setColor(Color.BLUE);
+        linePaint.setColor(Color.BLACK);
+        endPaint.setColor(Color.RED);
+        memPaint.setColor(Color.GREEN);
 
+        // clear the background
+        canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(),
+                backgroundPaint);
+
+        Point currentPoint = new Point(); // start of current target section
+
+        final int BlockSizeY = canvas.getHeight()/MAP_HEIGHT;
+        final int BlockSizeX = canvas.getWidth()/MAP_WIDTH;
+
+        int x = 0;
+        int y = 0;
+
+        // draw verticles.  (0,y+blocky,canvaswidth,y+blocky)
+        for (y = 0;y<canvas.getHeight(); y += BlockSizeY)
+        {
+            canvas.drawLine(x, y, canvas.getWidth(), y, linePaint);
+        }
+        y=0;
+        //draw the horizontals (
+        for(x = 0;x< canvas.getWidth(); x += BlockSizeX)
+        {
+            canvas.drawLine(x, y, x, canvas.getHeight(), linePaint);
+        }
+
+        int left, top;
+        for (int i = 0; i< MAP_WIDTH; i++){
+            for(int j = 0; j<MAP_HEIGHT; j++){
+
+                if (map[j][i] == 1){
+
+                    left = i*BlockSizeX;
+                    top = j*BlockSizeY;
+                    canvas.drawRect(left, top, left + BlockSizeX, top + BlockSizeY, blockPaint);
+                }
+                if((map[j][i] == 5) || (map[j][i] == 8)) {
+                    left = i * BlockSizeX;
+                    top = j * BlockSizeY;
+                    canvas.drawRect(left, top, left+ BlockSizeX, top + BlockSizeY, endPaint);
+                }
+            }
+        }
     }
 
-    public void MemoryRender(final int xClient, final int yClient)
+    public void MemoryRender(Canvas canvas)
     {
-
+        memPaint.setColor(Color.GREEN);
+        final int BlockSizeY = canvas.getHeight()/MAP_HEIGHT;
+        final int BlockSizeX = canvas.getWidth()/MAP_WIDTH;
+        int left, top;
+        for(int k = 0; k < MAP_WIDTH; k++)
+        {
+            for(int l = 0; l< MAP_HEIGHT; l++)
+            {
+                if(memory[l][k] == 1)
+                {
+                    left = k *BlockSizeX;
+                    top = l *BlockSizeY;
+                    canvas.drawRect(left, top, left + BlockSizeX, top + BlockSizeY, memPaint);
+                }
+            }
+        }
     }
 
     public void ResetMemory()

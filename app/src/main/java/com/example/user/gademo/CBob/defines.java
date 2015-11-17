@@ -1,4 +1,4 @@
-package com.example.user.gademo;
+package com.example.user.gademo.CBob;
 
 /**
  * Created by user on 8/16/15.
@@ -16,4 +16,6 @@ public class defines {
     public static final int POP_SIZE = 140;
     public static final int CHROMO_LENGTH = 70;
     public static final int GENE_LENGTH = 2;
+
+    public static final double mPixelFactor = 2;
 }

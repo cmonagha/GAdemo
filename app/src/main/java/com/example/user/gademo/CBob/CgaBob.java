@@ -1,16 +1,17 @@
-package com.example.user.gademo;
+package com.example.user.gademo.CBob;
 
 /**
  * Created by user on 8/16/15.
  */
 
+import android.graphics.Canvas;
 import android.util.Log;
 
 import java.util.Random;
 import java.util.Vector;
 
-import static com.example.user.gademo.defines.MAP_HEIGHT;
-import static com.example.user.gademo.defines.MAP_WIDTH;
+import static com.example.user.gademo.CBob.defines.MAP_HEIGHT;
+import static com.example.user.gademo.CBob.defines.MAP_WIDTH;
 /**
  * Created by user on 8/15/15.
  */
@@ -50,6 +51,8 @@ public class CgaBob {
     public CBobsMap m_BobsBrain = new CBobsMap();
 
     private boolean m_bBusy;
+
+
 
     private void Mutate(Vector<Integer> vecBits)
     {
@@ -154,7 +157,8 @@ public class CgaBob {
                 {
                     //if so, stom the run
                     m_bBusy = false;
-                    Log.i("CgaBob", "Found the exit");
+                    Log.i("CgaBob", "------------------Found the exit---------------------");
+                    //m_BobsBrain.ResetMemory();
                 }
             }
 
@@ -229,13 +233,16 @@ public class CgaBob {
 
     public void Run(){
         Log.i("CgaBob", "Run RAN");
+        m_BobsBrain.ResetMemory();
+        m_BobsMap.ResetMemory();
         CreateStartPopulation();
         m_bBusy = true;
        Epoch();
     }
-    public void Render()
-    {
 
+    public void Start()
+    {
+        m_bBusy = true;
     }
 
     public void Epoch()
@@ -276,6 +283,13 @@ public class CgaBob {
         }
 
         ++m_iGeneration;
+    }
+
+    public void render( Canvas canvas){
+        m_BobsMap.Render(canvas);
+        m_BobsBrain.MemoryRender(canvas);
+
+
     }
 
     public int Generation(){ return m_iGeneration;}
