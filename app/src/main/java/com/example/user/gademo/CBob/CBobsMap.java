@@ -57,6 +57,7 @@ public class CBobsMap {
     {
         Log.i("CBobsMap", "Constructor RAN");
         ResetMemory();
+<<<<<<< HEAD:app/src/main/java/com/example/user/gademo/CBob/CBobsMap.java
 
         memPaint = new Paint(); // Paint for drawing the blocker
         endPaint = new Paint(); // Paint for drawing the target
@@ -64,6 +65,9 @@ public class CBobsMap {
         blockPaint = new Paint();
         linePaint = new Paint();
     }
+=======
+    } // this is a addition
+>>>>>>> 4240405fb9c1640dc0020c5b3ab6346f5832eb60:app/src/main/java/com/example/user/gademo/CBobsMap.java
 
 
 
@@ -193,6 +197,7 @@ public class CBobsMap {
 
     public void MemoryRender(Canvas canvas)
     {
+<<<<<<< HEAD:app/src/main/java/com/example/user/gademo/CBob/CBobsMap.java
         memPaint.setColor(Color.GREEN);
         final int BlockSizeY = canvas.getHeight()/MAP_HEIGHT;
         final int BlockSizeX = canvas.getWidth()/MAP_WIDTH;
@@ -209,6 +214,9 @@ public class CBobsMap {
                 }
             }
         }
+=======
+        // this is a change
+>>>>>>> 4240405fb9c1640dc0020c5b3ab6346f5832eb60:app/src/main/java/com/example/user/gademo/CBobsMap.java
     }
 
     public void ResetMemory()
